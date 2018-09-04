@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+	<meta charset = "UTF-8">
+	<title>waterfall</title>
+	<style type="text/css">
+    *{
+    	margin: 0px;
+    	padding:0px;
+    	list-style: none;
+    }
+    ul{
+    	width: 1050px;
+    	margin: 0 auto;
+    }
+    ul li{
+    	width: 180px;
+    	margin-right: 20px;
+    	float: left;
+    }
+    ul li div{
+    	width: 180px;
+    	padding: 5px;
+    	border: 1px solid #f40;
+    }
+    ul li div img{
+    	width: 180px;
+    }
+
+
+
+
+
+	</style>
+</head>
+<body>
+
+	<ul>
+		<li><div>
+			<img src=""></img>
+		</div></li>
+        <li><div>
+        	<img src=""></img>
+        </div></li>
+        <li><div>
+        	<img src=""></img>
+        </div></li>
+        <li><div>
+        	<img src=""></img>
+        </div></li>
+	</ul>
+
+
+
+
+
+
+
+
+ 	<script type="text/javascript">
+    var oLi = document.getElementsByTagName('li');
+    function getMinHeightLi(){
+    	var currHeight = oLi[0].offsetHeight;
+    	var index = 0;
+	    	for (var i = 1; i < oLi.length; i++) {
+	    		if (currHeight > oLi[i].offsetHeight) {currHeight = oLi[i].offsetHeight;
+	    			index = i;
+	    		}
+	    	}
+	    	return index;
+	    }
+
+
+		function addImg(data){
+			alert('o');
+			var d = JSON.parse(data);
+			for (var i = 0; i < d.length; i++) {
+				var index = getMinHeightLi();
+				var oDiv = document.createElement('div');
+				var oImg = document.createElement('img');
+				oImg.style.height = d[i].height/d[i].width*180 + 'px';
+				oImg.src = d[i].preview;
+				oDiv.appendChild(oImg);
+				oLi[index].appendChild(oDiv);
+			}
+			loadDone = true;
+
+		}
+		var iPage = 1;
+		var loadDone = true;
+			function loadImage(){
+				if(loadDone){
+					iPage++
+					loadDone = false;
+				
+				Ajax('get','getPics.php',true,addImg,'?cpage =' + iPage);
+			}
+			}
+			loadImage();
+			window.onscroll = function (){
+				var index = getMinHeightLi();
+				var liHeight = oLi[index].offsetHeight;
+				var scrollTop = document.documentElement.srcollTop||document.body.scrollTop;
+				var clientHeight = document.documentElement.clientHeight||document.body.clientHeight;
+				if((scrollTop +clientHeight)>liHeight)
+					loadImage();
+			}
+
+
+
+function Ajax(method,address,flag,callBacks,data){
+	var xhr = null;
+	if (window.XMLHttpRequest){
+		xhr = new XMLHttpRequest();
+	} else{
+		xhr = new ActiveXObject('Microsoft.XMLHTTP');
+	}
+	if (method =="get") {
+		xhr.open('get',address,flag);
+		xhr.send();
+	}else if(method =="post"){
+		xhr.open('post',address,flag);
+		xhr.setRequestHeader('content-type','application/x-www-form-urlwncoded');
+		xhr.send(data);
+	}
+	xhr.onreadystatechange = function(){
+		if(xhr.readyState ==4){
+			if(xhr.status == 200){
+				callBacks(xhr.responseText);
+			}else{
+				alert('出错了,Err:' + xhr.status);
+			}
+		}
+	}
+} 
+
+
+
+
+
+
+
+	</script>
+
+</body>
+</html>
